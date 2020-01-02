@@ -1,0 +1,20 @@
+---
+# file: roles/plaso/tasks/main.yml
+- name: APT_Repository | Add gift/stable PPA
+  apt_repository:
+    repo: ppa:gift/stable
+    state: present
+    filename: plaso-gift-stable
+  become: yes
+  become_method: sudo
+
+- name: APT | Install plaso from gift ppa
+  apt:
+    name:
+      - libffi-dev
+      - python3-psycopg2
+      - plaso-tools
+    state: present
+    update_cache: yes
+  become: yes
+  become_method: sudo
