@@ -11,12 +11,10 @@
 #   the installation guide for the current timesketch & plaso version!
 ---
 - hosts: all
-  become: true
-  become_method: sudo
 
   roles:
     - { role: yara }
-    # - { role: plaso_ppa }
+    - { role: plaso }
     # - { role: elasticsearch_6 }
     # - { role: timesketch_20190207}
     # - { role: celery }
