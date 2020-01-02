@@ -1,3 +1,14 @@
+# Ansible Playbook for deployment of the current version of timesketch 20191220 on Ubuntu Server 18.04.03
+# Version: 0.1
+# Date: 2020-01-02
+# Authors:
+#   Torsten Uhlig - torsten.uhlig@tuhlig.de
+#   Sven Püschel - spueschel89@gmail.com
+#
+#
+# Comments:
+#   Thanks to Torsten Uhlig for fixing some plaso errors and creating
+#   the installation guide for the current timesketch & plaso version!
 ---
 - hosts: all
   become: true
