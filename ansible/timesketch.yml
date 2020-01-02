@@ -15,6 +15,7 @@
   roles:
     - { role: yara }
     - { role: plaso }
+    - { role: nodejs8 }
     # - { role: elasticsearch_6 }
     # - { role: timesketch_20190207}
     # - { role: celery }

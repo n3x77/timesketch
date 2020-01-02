@@ -1,0 +1,25 @@
+---
+# file: roles/nodejs/tasks/main.yml
+- name: APT_KEY | Add nodejs repo key
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    state: present
+  become: yes
+  become_method: sudo
+
+- name: APT_Repository | Add nodejs8.x repository
+  apt_repository:
+    repo: deb https://deb.nodesource.com/node_8.x bionic main
+    state: present
+    filename: nodejs8
+  become: yes
+  become_method: sudo
+
+- name: APT | Install nodejs 8
+  apt:
+    name:
+      - nodejs
+    state: present
+    update_cache: yes
+  become: yes
+  become_method: sudo
