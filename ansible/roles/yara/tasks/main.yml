@@ -44,7 +44,7 @@
 - name: Yara | Configure yara
   become_user: "{{ansible_user}}"
   become_method: su
-  command: ./configure --enable-magic
+  command: ./configure --enable-magic --with-crypto
   args:
     chdir: "/home/{{ansible_user}}/tmp/yara-3.11.0/"
 
