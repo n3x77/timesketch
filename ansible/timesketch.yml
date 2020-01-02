@@ -1,0 +1,15 @@
+---
+- hosts: all
+  become: true
+  become_method: sudo
+
+  roles:
+    - { role: yara }
+    # - { role: plaso_ppa }
+    # - { role: elasticsearch_6 }
+    # - { role: timesketch_20190207}
+    # - { role: celery }
+    # - { role: nginx_wsgi }
+
+  vars_prompt:
+

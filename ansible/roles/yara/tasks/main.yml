@@ -1,0 +1,68 @@
+---
+# file: roles/yara/tasks/main.yml
+- name: APT | Install Yara dependencies
+  apt:
+    name:
+        - automake
+        - libtool
+        - make
+        - gcc
+        - flex
+        - bison
+        - libssl-dev
+        - libmagic-dev
+        - unzip
+    state: present
+    install_recommends : yes
+  become: yes
+  become_method: sudo
+
+- name: File | Create tmp folder within home user directory for installation of needed tools
+  file:
+    path: "/home/{{ansible_user}}/tmp"
+    owner: "{{ansible_user}}"
+    group: "{{ansible_user}}"
+    mode: "700"
+    state: directory
+
+- name: Yara | Download Yara Version 3.11 from github releases page 
+  unarchive:
+    src: "https://github.com/VirusTotal/yara/archive/v3.11.0.zip"
+    dest: "/home/{{ansible_user}}/tmp"
+    owner: "{{ansible_user}}"
+    group: "{{ansible_user}}"
+    mode: "700"
+    remote_src: yes
+
+- name: Yara | Execute bootstrap.sh
+  become_user: "{{ansible_user}}"
+  become_method: su
+  shell: "/home/{{ansible_user}}/tmp/yara-3.11.0/bootstrap.sh"
+  args:
+    chdir: "/home/{{ansible_user}}/tmp/yara-3.11.0/"
+
+- name: Yara | Configure yara
+  become_user: "{{ansible_user}}"
+  become_method: su
+  command: ./configure --enable-magic
+  args:
+    chdir: "/home/{{ansible_user}}/tmp/yara-3.11.0/"
+
+- name: Yara | make yara
+  become_user: "{{ansible_user}}"
+  become_method: su
+  command: make
+  args:
+    chdir: "/home/{{ansible_user}}/tmp/yara-3.11.0/"
+
+- name: Yara | make install
+  command: make install
+  args:
+    chdir: "/home/{{ansible_user}}/tmp/yara-3.11.0/"
+  become: yes
+  become_method: sudo
+
+- name:  Yara | Delete the local yara installation dir
+  file:
+    path: "/home/{{ansible_user}}/tmp/yara-3.11.0/"
+    state: absent
