@@ -36,3 +36,6 @@ vagrant/*.log
 .venv/
 venv/*
 .vscode/
+
+# Bloom
+*.bloom
