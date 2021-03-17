@@ -15,6 +15,7 @@
 
 # Register all analyzers here by importing them.
 from timesketch.lib.analyzers import account_finder
+from timesketch.lib.analyzers import bloom_tagger
 from timesketch.lib.analyzers import browser_search
 from timesketch.lib.analyzers import browser_timeframe
 from timesketch.lib.analyzers import chain
