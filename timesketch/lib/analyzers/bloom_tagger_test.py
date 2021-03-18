@@ -10,9 +10,17 @@ class TestBloomTaggerPlugin(BaseTest):
 
     def _config_validation(self, config):
         """Validate that all items of a config are valid."""
-        query = config.get('bloom_filter')
+        filter = config.get('bloom_filter')
+        self.assertIsNotNone(filter)
+        self.assertIsInstance(filter, str)
+
+        query = config.get('query_string')
         self.assertIsNotNone(query)
         self.assertIsInstance(query, str)
+
+        fields = config.get('fields')
+        self.assertIsNotNone(fields)
+        self.assertIsInstance(fields, (list, tuple))
 
         emojis_to_add = config.get('emojis')
         if emojis_to_add:
@@ -35,8 +43,12 @@ class TestBloomTaggerPlugin(BaseTest):
         test_config = yaml.safe_load("""
         place_holder:
           bloom_filter: '*'
+          query_string: '*'
+          fields: ['place-holder']
           tags: ['place-holder']
           emojis: ['ID_BUTTON']
+          create_view: boolean
+          view_name: 'place-holder'
           """)
 
         self.assertIsInstance(test_config, dict)
