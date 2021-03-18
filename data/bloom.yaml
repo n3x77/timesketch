@@ -22,10 +22,10 @@ nsrl:
   bloom_filter: '/tmp/RDS_MODERN_2.7.2_March21.bloom'
   query_string: '*'
   fields: ['md5_hash', 'sha1_hash', 'sha256_hash']
-  tags: ['nsrl', 'whitelist']
+  tags: ['nsrl', 'whitelist', 'hashset']
   emojis: ['WHITEFLAG',]
-  create_view: false
-  view_name: 'NSRL'
+  create_view: true
+  view_name: 'NSRL Hashset Version 2.7.2 - March 21'
 #TODO: Check if it makes sense to define some types like md5, sha1, sha256, ip, URI, domain
 # and add regular expressions at it to be also able to extract that values from message field
 # if the values are not present in specific fields through the parsing
