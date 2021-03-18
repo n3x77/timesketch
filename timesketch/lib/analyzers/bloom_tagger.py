@@ -75,9 +75,12 @@ class BloomTaggerSketchPlugin(interface.BaseSketchAnalyzer):
         emoji_names = config.get('emojis', [])
         emojis_to_add = [emojis.get_emoji(x) for x in emoji_names]
 
+        hashes_md5 = None
+        hashes_sha1 = None
+        hashes_sha256 = None
         total_matches = 0
         matching_hash = set()
-        events = self.event_stream(query_string="*", return_fields=['message'])
+        events = self.event_stream(query_string="md5_hash:* OR sha1_hash:* OR sha256_hash:*", return_fields=['md5_hash, sha1_hash, sha256_hash'])
 
         # regexes for hash extraction out of the message
         re_hash_md5 = re.compile(r"\b[(A-F|a-f)0-9]{32}$")
@@ -87,15 +90,24 @@ class BloomTaggerSketchPlugin(interface.BaseSketchAnalyzer):
         for event in events:
             # we build a unique set of all hashes that are in one event
             hashes = set()
-            hashes_md5 = re.findall(re_hash_md5, event.source['message'])
-            hashes_sha1 = re.findall(re_hash_sha1, event.source['message'])
-            hashes_sha256 = re.findall(re_hash_sha256, event.source['message'])
-            [hashes.add(h) for h in hashes_md5]
-            [hashes.add(h) for h in hashes_sha1]
-            [hashes.add(h) for h in hashes_sha256]
+            try:
+                hashes_md5 = re.findall(re_hash_md5, event.source['md5_hash'])
+                hashes_sha1 = re.findall(re_hash_sha1, event.source['sha1_hash'])
+                hashes_sha256 = re.findall(re_hash_sha256, event.source['sha256_hash'])
+            except KeyError as e:
+                print(e)
+
+            if hashes_md5 is not None:
+                [hashes.add(h) for h in hashes_md5]
+            if hashes_sha1 is not None: 
+                [hashes.add(h) for h in hashes_sha1]
+            if hashes_sha256 is not None:
+                [hashes.add(h) for h in hashes_sha256]
+
             for h in hashes:
+                print(h)
                 # we check if the hash is in the bloomfilter
-                if bf.check(h) is True:
+                if bf.check(bytes(h, encoding='ascii')) == True:
                     total_matches+=1
                     matching_hash.append(h)
 
