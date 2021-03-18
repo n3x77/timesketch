@@ -112,8 +112,13 @@ class BloomTaggerSketchPlugin(interface.BaseSketchAnalyzer):
             event.commit()
 
         if create_view and event_counter:
+            # Prepare the tags so that they can be used in the query
+            for i, t in enumerate(tags):
+                tags[i] = '"{}"'.format(t)
+            # prepare LUCENE
+            q = ' OR '.join(tags)
             self.sketch.add_view(
-                view_name, self.NAME, query_string=query)
+                view_name, self.NAME, query_string='tag CONTAINS ({})'.format(q))
 
         return '{0:d} events tagged for [{1:s}] of {2:d} events and {3:d} lists and {4:d} strings and {5:d} matches'.format(total_matches, name,  event_counter, list_counter, str_counter, total_matches)
 
