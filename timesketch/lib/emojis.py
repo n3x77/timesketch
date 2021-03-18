@@ -42,7 +42,8 @@ EMOJI_MAP = {
     'SLEEPING_FACE': emoji('&#x1F634', 'Activity outside of regular hours'),
     'SPARKLES': emoji('&#x2728', 'New entity created'),
     'UNLOCK': emoji('&#x1F513', 'Logoff activity'),
-    'WASTEBASKET': emoji('&#x1F5D1', 'Deletion activity')
+    'WASTEBASKET': emoji('&#x1F5D1', 'Deletion activity'),
+    'WHITEFLAG': emoji('&#x1F3F3', 'Whitelist')
 }
 
 
