@@ -26,3 +26,6 @@ nsrl:
   emojis: ['SKULL', 'SPARKLES']
   create_view: false
   view_name: 'NSRL'
+#TODO: Check if it makes sense to define some types like md5, sha1, sha256, ip, URI, domain
+# and add regular expressions at it to be also able to extract that values from message field
+# if the values are not present in specific fields through the parsing
