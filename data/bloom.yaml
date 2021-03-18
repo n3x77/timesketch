@@ -20,6 +20,8 @@
 # ------------------------------------------------------------------------
 nsrl:
   bloom_filter: '/tmp/RDS_MODERN_2.7.2_March21.bloom'
+  query_string: '*'
+  fields: ['md5_hash', 'sha1_hash', 'sha256_hash']
   tags: ['nsrl', 'whitelist']
   emojis: ['SKULL', 'SPARKLES']
   create_view: false
