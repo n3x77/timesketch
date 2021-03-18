@@ -80,6 +80,8 @@ class BloomTaggerSketchPlugin(interface.BaseSketchAnalyzer):
         matches = set()
 
         event_counter = 0
+        list_counter = 0
+        str_counter = 0
         events = self.event_stream(query_string=query, return_fields=fields)
 
         # regexes for hash extraction out of the message
@@ -88,10 +90,30 @@ class BloomTaggerSketchPlugin(interface.BaseSketchAnalyzer):
         re_hash_sha256 = re.compile(r"\b[(A-F|a-f)0-9]{64}$")
 
         for event in events:
-            # we build a unique set of all hashes that are in one event
             event_counter += 1
+            for field in fields:
+                print(field)
+                f = event.source.get(field)
 
-        return '{0:d} events tagged for [{1:s}] of {2:d} events'.format(total_matches, name, event_counter)
+                if f is None:
+                    continue
+                
+                if isinstance(f, list):
+                    list_counter +=1
+                    continue
+                if isinstance(f, str):
+                    str_counter +=1
+                # make sure that the filters are build lowercase
+                #TODO: We need to check if this makes sense for every type: ip, domain, url
+                    if str.encode(f.lower()) in bf:
+                        total_matches += 1
+                        matches.add(f)
+                        # return '{}'.format(matches)
+                        event.add_tags(tags)
+                        event.add_emojis(emojis_to_add)
+            event.commit()
+
+        return '{0:d} events tagged for [{1:s}] of {2:d} events and {3:d} lists and {4:d} strings and {5:d} matches'.format(total_matches, name,  event_counter, list_counter, str_counter, total_matches)
 
 
 manager.AnalysisManager.register_analyzer(BloomTaggerSketchPlugin)
