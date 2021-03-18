@@ -23,7 +23,7 @@ nsrl:
   query_string: '*'
   fields: ['md5_hash', 'sha1_hash', 'sha256_hash']
   tags: ['nsrl', 'whitelist']
-  emojis: ['SKULL', 'SPARKLES']
+  emojis: ['WHITEFLAG',]
   create_view: false
   view_name: 'NSRL'
 #TODO: Check if it makes sense to define some types like md5, sha1, sha256, ip, URI, domain
