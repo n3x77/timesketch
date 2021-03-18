@@ -92,26 +92,28 @@ class BloomTaggerSketchPlugin(interface.BaseSketchAnalyzer):
         for event in events:
             event_counter += 1
             for field in fields:
-                print(field)
                 f = event.source.get(field)
 
                 if f is None:
                     continue
-                
+
                 if isinstance(f, list):
-                    list_counter +=1
+                    list_counter += 1
                     continue
                 if isinstance(f, str):
-                    str_counter +=1
+                    str_counter += 1
                 # make sure that the filters are build lowercase
-                #TODO: We need to check if this makes sense for every type: ip, domain, url
+                # TODO: We need to check if this makes sense for every type: ip, domain, url
                     if str.encode(f.lower()) in bf:
                         total_matches += 1
                         matches.add(f)
-                        # return '{}'.format(matches)
                         event.add_tags(tags)
                         event.add_emojis(emojis_to_add)
             event.commit()
+
+        if create_view and event_counter:
+            self.sketch.add_view(
+                view_name, self.NAME, query_string=query)
 
         return '{0:d} events tagged for [{1:s}] of {2:d} events and {3:d} lists and {4:d} strings and {5:d} matches'.format(total_matches, name,  event_counter, list_counter, str_counter, total_matches)
 
