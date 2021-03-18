@@ -59,28 +59,28 @@ class BloomTaggerSketchPlugin(interface.BaseSketchAnalyzer):
             String with summary of the analyzer result.
         """
 
-        # We load the bloom_filter file that was defined in the bloom.yaml
+        # load values from configuration file defined in the bloom.yaml
         bloom_filter = config.get('bloom_filter')
-
         try:
             bf = BloomFilter()
             with open(bloom_filter, 'rb') as f:
                 bf.read(f)
         except FileNotFoundError as e:
-            return 'Error when loading bloom filter {}'.format(bloom_filter)
-            
-        create_view = config.get('create_view', False)
-        view_name = config.get('view_name', name)
+            return 'Error: {} when loading bloom filter {}'.format(e, bloom_filter)
+
+        query = config.get('query_string')
+        fields = config.get('fields', [])
         tags = config.get('tags', [])
         emoji_names = config.get('emojis', [])
         emojis_to_add = [emojis.get_emoji(x) for x in emoji_names]
+        create_view = config.get('create_view', False)
+        view_name = config.get('view_name', name)
 
-        hashes_md5 = None
-        hashes_sha1 = None
-        hashes_sha256 = None
         total_matches = 0
-        matching_hash = set()
-        events = self.event_stream(query_string="md5_hash:* OR sha1_hash:* OR sha256_hash:*", return_fields=['md5_hash, sha1_hash, sha256_hash'])
+        matches = set()
+
+        event_counter = 0
+        events = self.event_stream(query_string=query, return_fields=fields)
 
         # regexes for hash extraction out of the message
         re_hash_md5 = re.compile(r"\b[(A-F|a-f)0-9]{32}$")
@@ -89,39 +89,9 @@ class BloomTaggerSketchPlugin(interface.BaseSketchAnalyzer):
 
         for event in events:
             # we build a unique set of all hashes that are in one event
-            hashes = set()
-            try:
-                hashes_md5 = re.findall(re_hash_md5, event.source['md5_hash'])
-                hashes_sha1 = re.findall(re_hash_sha1, event.source['sha1_hash'])
-                hashes_sha256 = re.findall(re_hash_sha256, event.source['sha256_hash'])
-            except KeyError as e:
-                print(e)
+            event_counter += 1
 
-            if hashes_md5 is not None:
-                [hashes.add(h) for h in hashes_md5]
-            if hashes_sha1 is not None: 
-                [hashes.add(h) for h in hashes_sha1]
-            if hashes_sha256 is not None:
-                [hashes.add(h) for h in hashes_sha256]
-
-            for h in hashes:
-                print(h)
-                # we check if the hash is in the bloomfilter
-                if bf.check(bytes(h, encoding='ascii')) == True:
-                    total_matches+=1
-                    matching_hash.append(h)
-
-                    event.add_tags(tags)
-                    event.add_emojis(emojis_to_add)
-
-            # Commit the event to the datastore.
-            event.commit()
-
-        # if create_view and total_matches:
-        #     self.sketch.add_view(
-        #         view_name, self.NAME, query_string=tags, query_dsl=query_dsl)
-
-        return '{0:d} events tagged for [{1:s}]'.format(total_matches, name)
+        return '{0:d} events tagged for [{1:s}] of {2:d} events'.format(total_matches, name, event_counter)
 
 
 manager.AnalysisManager.register_analyzer(BloomTaggerSketchPlugin)
