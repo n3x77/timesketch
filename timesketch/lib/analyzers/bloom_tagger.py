@@ -116,7 +116,7 @@ class BloomTaggerSketchPlugin(interface.BaseSketchAnalyzer):
             for i, t in enumerate(tags):
                 tags[i] = '"{}"'.format(t)
             # prepare LUCENE
-            q = ' OR '.join(tags)
+            q = ' AND '.join(tags)
             self.sketch.add_view(
                 view_name, self.NAME, query_string='tag CONTAINS ({})'.format(q))
 
